@@ -20,7 +20,7 @@ const Dashboard = () => {
             if (!token) return;
 
             try {
-                const res = await axios.get<AdminResponse>(`${BASE_URL}/auth/getCurrentAdmin`, {
+                const res = await axios.get<AdminResponse>(`${BASE_URL}/api/auth/getCurrentAdmin`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

@@ -45,7 +45,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post(`${BASE_URL}/auth/register`, formData);
+      const response = await axios.post(`${BASE_URL}/api/auth/register`, formData);
       console.log('Registration successful:', response.data);
       alert('Registered successfully!');
       navigate('/');

@@ -25,7 +25,7 @@ const Navbar = () => {
             if (!token) return;
 
             try {
-                const res = await axios.get(`${BASE_URL}/auth/getCurrentAdmin`, {
+                const res = await axios.get(`${BASE_URL}/api/auth/getCurrentAdmin`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

@@ -39,7 +39,7 @@ const AddProduct = () => {
     const fetchProductDetails = async () => {
         try {
             const token = localStorage.getItem('jwtToken');
-            const res = await axios.get<{ products: Product[] }>(`${BASE_URL}/products/allProducts`, {
+            const res = await axios.get<{ products: Product[] }>(`${BASE_URL}/api/products/allProducts`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -91,7 +91,7 @@ const AddProduct = () => {
             const token = localStorage.getItem('jwtToken');
 
             if (isEditMode) {
-                await axios.put(`${BASE_URL}/products/product/${productId}`, formData, {
+                await axios.put(`${BASE_URL}/api/products/product/${productId}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ const AddProduct = () => {
                 localStorage.removeItem('pId');
                 navigate('/dashboard');
             } else {
-                await axios.post(`${BASE_URL}/products/addProduct`, formData, {
+                await axios.post(`${BASE_URL}/api/products/addProduct`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`,

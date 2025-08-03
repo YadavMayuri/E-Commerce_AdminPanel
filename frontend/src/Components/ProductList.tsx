@@ -48,7 +48,7 @@ const ProductList: React.FC = () => {
 
         try {
             setLoading(true);
-            const res = await axios.get(`${BASE_URL}/products/allProducts`, {
+            const res = await axios.get(`${BASE_URL}/api/products/allProducts`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -80,7 +80,7 @@ const ProductList: React.FC = () => {
 
         const token = localStorage.getItem('jwtToken');
         try {
-            await axios.delete(`${BASE_URL}/products/deleteProduct/${id}`, {
+            await axios.delete(`${BASE_URL}/api/products/deleteProduct/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
