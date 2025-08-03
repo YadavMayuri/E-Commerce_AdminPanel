@@ -1,120 +1,123 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../config';
+
+type FormData = {
+  name: string;
+  email: string;
+  password: string;
+};
 
 const Register = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: ''
-    });
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    password: '',
+  });
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    const validateEmail = (email: string) => {
-      
-        const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const typos = ['gmmail.com', 'gmial.com', 'gnail.com'];
+  const validateEmail = (email: string): boolean => {
+    const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const typos = ['gmmail.com', 'gmial.com', 'gnail.com'];
+    const domain = email.split('@')[1];
+    return basicEmailRegex.test(email) && !typos.includes(domain);
+  };
 
-        const domain = email.split('@')[1];
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-        if (!basicEmailRegex.test(email)) return false;
-        if (typos.includes(domain)) return false;
+    const { name, email, password } = formData;
 
-        return true;
-    };
+    if (!name || !email || !password) {
+      alert('Please fill all the fields.');
+      return;
+    }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    if (!validateEmail(email)) {
+      alert('Invalid email. Please enter a valid email address.');
+      return;
+    }
 
-        if (!validateEmail(formData.email)) {
-            alert('Invalid email. Please enter a valid email address.');
-            return;
-        }
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/register`, formData);
+      console.log('Registration successful:', response.data);
+      alert('Registered successfully!');
+      navigate('/');
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || error.response?.data || 'Registration failed. Please try again.';
+      console.error('Registration failed:', errorMessage);
+      alert(errorMessage);
+    }
+  };
 
-        try {
-            const response = await axios.post(`${BASE_URL}/auth/register`, formData);
-            console.log('Registration successful:', response.data);
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 px-4">
+      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-6">
+          Sign Up
+        </h2>
 
-            alert('Registered successfully!');
-            navigate('/');
-        } catch (error: any) {
-            console.error('Registration failed:', error.response?.data || error.message);
-            const errorMessage =
-                error.response?.data?.message || error.response?.data || 'Registration failed. Please try again.';
-            alert(errorMessage);
-        }
-    };
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <input
+              type="text"
+              name="name"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-0 focus:outline-none focus:border-blue-400 capitalize"
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              name="email"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-0 focus:outline-none focus:border-purple-400"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <input
+              type="password"
+              name="password"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-0 focus:outline-none focus:border-pink-400 mb-2"
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </div>
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 px-4">
-            <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white py-2 px-4 rounded-md hover:opacity-90 transition font-semibold"
+          >
+            Sign Up
+          </button>
 
-                <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-6">
-                    Sign Up
-                </h2>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-0 focus:outline-none focus:border-blue-400"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-0 focus:outline-none focus:border-purple-400"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-0 focus:outline-none focus:border-pink-400 mb-2"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white py-2 px-4 rounded-md hover:opacity-90 transition font-semibold"
-                    >
-                        Sign Up
-                    </button>
-
-                    <p className="mt-4 text-center text-[13px] text-gray-600">
-                        Already have an account?{' '}
-                        <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-medium hover:underline cursor-pointer" onClick={()=> navigate('/')}>
-                            Sign in here
-                        </span>
-                    </p>
-                </form>
-            </div>
-        </div>
-    );
+          <p className="mt-4 text-center text-[13px] text-gray-600">
+            Already have an account?{' '}
+            <span
+              className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-medium hover:underline cursor-pointer"
+              onClick={() => navigate('/')}
+            >
+              Sign in here
+            </span>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default Register;

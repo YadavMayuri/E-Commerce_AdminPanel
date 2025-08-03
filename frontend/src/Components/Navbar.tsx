@@ -11,10 +11,6 @@ import { useEffect, useState } from 'react';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 
-function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(' ')
-}
-
 const Navbar = () => {
 
     const [adminName, setAdminName] = useState<string>('');
@@ -92,7 +88,7 @@ const Navbar = () => {
                                 <MenuItem>
                                     {adminName && (
                                         <span
-                                            className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'   >
+                                            className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 capitalize'   >
                                             Hi, {adminName}
                                         </span>
                                     )}

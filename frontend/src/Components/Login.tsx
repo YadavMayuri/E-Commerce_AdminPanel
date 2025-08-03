@@ -3,8 +3,13 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 
+type AuthFormData = {
+    email: string;
+    password: string;
+};
+
 const Login = () => {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<AuthFormData>({
         email: '',
         password: ''
     });
@@ -29,6 +34,11 @@ const Login = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!formData.email || !formData.password) {
+            alert("Please fill all the fields.");
+            return;
+        }
+
         if (!validateEmail(formData.email)) {
             alert('Invalid email. Please enter a valid email address.');
             return;
@@ -38,14 +48,15 @@ const Login = () => {
             const response = await axios.post(`${BASE_URL}/auth/login`, formData);
             console.log('Login successful:', response.data);
 
-             localStorage.setItem('jwtToken', response.data.token);
+            localStorage.setItem('jwtToken', response.data.token);
 
             alert('Login successful!');
             navigate('/dashboard');
-        } catch (error: any) {
-            console.error('Login failed:', error.response?.data || error.message);
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: any }; message?: string };
+            console.error('Login failed:', err.response?.data || err.message);
             const errorMessage =
-                error.response?.data?.message || error.response?.data || 'Login failed. Please try again.';
+                err.response?.data?.message || err.response?.data || 'Login failed. Please try again.';
             alert(errorMessage);
         }
     };
@@ -67,7 +78,6 @@ const Login = () => {
                             className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-0 focus:outline-none focus:border-purple-400"
                             value={formData.email}
                             onChange={handleChange}
-                            required
                         />
                     </div>
 
@@ -79,7 +89,6 @@ const Login = () => {
                             className="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-0 focus:outline-none focus:border-pink-400 mb-2"
                             value={formData.password}
                             onChange={handleChange}
-                            required
                         />
                     </div>
 

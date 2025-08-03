@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Dashboard from './Components/Dashboard'
 import Register from './Components/Register'
 import Login from './Components/Login'
-import SingleProduct from './Components/SingleProduct'
+import AddProduct from './Components/AddProduct'
 
 function App() {
  
@@ -14,7 +14,9 @@ function App() {
       <Route path='/' element={<Login/>}/>
       <Route path='/register' element={<Register/>}/>
       <Route path='/dashboard' element={<Dashboard/>}/>
-      <Route path='/singleProduct' element={<SingleProduct/>}/>
+      <Route path='/addProduct' element={<AddProduct/>}/>
+
+      
 
     </Routes>
      

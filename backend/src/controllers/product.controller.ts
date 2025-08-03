@@ -117,12 +117,18 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
         product.sku = sku || product.sku;
         product.name = name || product.name;
         product.price = price || product.price;
-        await productRepo.save(product);
 
-        // Delete old images
-        await imageRepo.remove(product.images);
+        // Parse removed images (URLs)
+        const removedImages: string[] = JSON.parse(req.body.removedImages || '[]');
 
-        // Upload new images if provided
+        // Separate images to delete and keep
+        const imagesToDelete = product.images.filter(img => removedImages.includes(img.url));
+        const imagesToKeep = product.images.filter(img => !removedImages.includes(img.url));
+
+        // Remove only selected images
+        await imageRepo.remove(imagesToDelete);
+
+        // Upload new images (if any)
         const uploadToCloudinary = (file: Express.Multer.File): Promise<string> => {
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
@@ -132,7 +138,6 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
                         resolve(result.secure_url);
                     }
                 );
-
                 streamifier.createReadStream(file.buffer).pipe(stream);
             });
         };
@@ -145,6 +150,12 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
             })
         );
 
+        // Combine kept old images + new uploaded ones
+        product.images = [...imagesToKeep, ...uploadedImages];
+
+        // Save the updated product
+        await productRepo.save(product);
+
         return res.status(200).json({
             message: 'Product updated successfully',
             product: {
@@ -152,7 +163,7 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
                 sku: product.sku,
                 name: product.name,
                 price: product.price,
-                images: uploadedImages.map((img) => img.url),
+                images: product.images.map(img => img.url),
             },
         });
     } catch (error) {
