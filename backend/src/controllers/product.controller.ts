@@ -113,22 +113,17 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        // Update basic fields
         product.sku = sku || product.sku;
         product.name = name || product.name;
         product.price = price || product.price;
 
-        // Parse removed images (URLs)
         const removedImages: string[] = JSON.parse(req.body.removedImages || '[]');
 
-        // Separate images to delete and keep
         const imagesToDelete = product.images.filter(img => removedImages.includes(img.url));
         const imagesToKeep = product.images.filter(img => !removedImages.includes(img.url));
 
-        // Remove only selected images
         await imageRepo.remove(imagesToDelete);
 
-        // Upload new images (if any)
         const uploadToCloudinary = (file: Express.Multer.File): Promise<string> => {
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
@@ -150,10 +145,8 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
             })
         );
 
-        // Combine kept old images + new uploaded ones
         product.images = [...imagesToKeep, ...uploadedImages];
 
-        // Save the updated product
         await productRepo.save(product);
 
         return res.status(200).json({

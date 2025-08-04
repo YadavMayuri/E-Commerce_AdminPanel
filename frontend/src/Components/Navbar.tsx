@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import {
     Disclosure,
     Menu,
@@ -10,6 +9,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
 
@@ -30,7 +30,6 @@ const Navbar = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                console.log(res.data, "resdata");
 
                 setAdminName(res.data.name);
                 setAdminEmail(res.data.email)
@@ -55,7 +54,7 @@ const Navbar = () => {
     const logout = () => {
         localStorage.removeItem('jwtToken');
         navigate('/');
-        alert('Logged out successfully!');
+        toast.success('Logged out successfully!');
     };
 
 
@@ -64,17 +63,14 @@ const Navbar = () => {
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="relative flex h-16 items-center justify-between">
 
-                    {/* Logo and navigation */}
                     <div className="flex flex-1 items-center justify-start sm:items-stretch sm:justify-start">
                         <div className="flex flex-shrink-0 items-center mx-4 sm:mx-0">
                             <span className='font-bold text-[22px]'> Admin Panel</span>
                         </div>
                     </div>
 
-                    {/* Right-side icons */}
                     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
 
-                        {/* Profile Dropdown */}
 
                         <Menu as="div" className="relative ml-3">
                             <div>

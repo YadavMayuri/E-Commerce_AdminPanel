@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 type AuthFormData = {
     email: string;
@@ -15,6 +16,8 @@ const Login = () => {
     });
 
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,14 +38,16 @@ const Login = () => {
         e.preventDefault();
 
         if (!formData.email || !formData.password) {
-            alert("Please fill all the fields.");
+            toast.error("Please fill all the fields.");
             return;
         }
 
         if (!validateEmail(formData.email)) {
-            alert('Invalid email. Please enter a valid email address.');
+            toast.error('Invalid email. Please enter a valid email address.');
             return;
         }
+
+        setLoading(true);
 
         try {
             const response = await axios.post(`${BASE_URL}/api/auth/login`, formData);
@@ -50,14 +55,16 @@ const Login = () => {
 
             localStorage.setItem('jwtToken', response.data.token);
 
-            alert('Login successful!');
+            toast.success('Login successful!');
             navigate('/dashboard');
         } catch (error: unknown) {
             const err = error as { response?: { data?: any }; message?: string };
             console.error('Login failed:', err.response?.data || err.message);
             const errorMessage =
                 err.response?.data?.message || err.response?.data || 'Login failed. Please try again.';
-            alert(errorMessage);
+            toast.error(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -94,10 +101,15 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white py-2 px-4 rounded-md hover:opacity-90 transition font-semibold mt-2"
+                        className={`w-full flex justify-center items-center gap-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white py-2 px-4 rounded-md transition font-semibold mt-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                        disabled={loading}
                     >
-                        Sign In
+                        {loading && (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        )}
+                        {!loading && 'Sign In'}
                     </button>
+
 
                     <p className="mt-4 text-center text-[13px] text-gray-600">
                         Don't have an account?{' '}

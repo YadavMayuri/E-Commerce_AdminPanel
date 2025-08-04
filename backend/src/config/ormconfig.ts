@@ -4,7 +4,7 @@ import { Product } from '../entities/Product';
 import { Admin } from '../entities/Admin';
 import { ProductImage } from '../entities/ProductImage';
 
-config(); // Load env vars from .env
+config(); 
 
 export const AppDataSource = new DataSource({
     type: 'postgres',

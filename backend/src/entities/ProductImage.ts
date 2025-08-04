@@ -1,4 +1,3 @@
-// src/entities/ProductImage.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Product } from './Product';
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
+import toast from 'react-hot-toast';
 
 type FormData = {
   name: string;
@@ -17,6 +18,8 @@ const Register = () => {
   });
 
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,29 +34,34 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     const { name, email, password } = formData;
 
     if (!name || !email || !password) {
-      alert('Please fill all the fields.');
+      toast.error('Please fill all the fields.');
+      setLoading(false);
       return;
     }
 
     if (!validateEmail(email)) {
-      alert('Invalid email. Please enter a valid email address.');
+      toast.error('Invalid email. Please enter a valid email address.');
+      setLoading(false);
       return;
     }
 
     try {
       const response = await axios.post(`${BASE_URL}/api/auth/register`, formData);
       console.log('Registration successful:', response.data);
-      alert('Registered successfully!');
+      toast.success('Registered successfully!');
       navigate('/');
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || error.response?.data || 'Registration failed. Please try again.';
       console.error('Registration failed:', errorMessage);
-      alert(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,10 +108,15 @@ const Register = () => {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white py-2 px-4 rounded-md hover:opacity-90 transition font-semibold"
+            className={`w-full flex justify-center items-center gap-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white py-2 px-4 rounded-md hover:opacity-90 transition font-semibold ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            disabled={loading}
           >
-            Sign Up
+            {loading && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            )}
+            {!loading && 'Sign Up'}
           </button>
+
 
           <p className="mt-4 text-center text-[13px] text-gray-600">
             Already have an account?{' '}

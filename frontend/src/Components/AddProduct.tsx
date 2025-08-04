@@ -3,6 +3,8 @@ import Navbar from '../Components/Navbar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
+import toast from 'react-hot-toast';
+import IconLoader from './IconLoader';
 
 interface ProductImage {
     id: string;
@@ -25,6 +27,8 @@ const AddProduct = () => {
     const [existingImages, setExistingImages] = useState<string[]>([]);
     const [existingImagesToRemove, setExistingImagesToRemove] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [pageLoading, setPageLoading] = useState<boolean>(false);
+
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
@@ -37,6 +41,7 @@ const AddProduct = () => {
     }, [productId]);
 
     const fetchProductDetails = async () => {
+        setPageLoading(true);
         try {
             const token = localStorage.getItem('jwtToken');
             const res = await axios.get<{ products: Product[] }>(`${BASE_URL}/api/products/allProducts`, {
@@ -52,7 +57,9 @@ const AddProduct = () => {
             }
         } catch (err) {
             console.error(err);
-            alert('Error fetching product');
+            toast.error('Error fetching product');
+        } finally {
+            setPageLoading(false);
         }
     };
 
@@ -75,7 +82,7 @@ const AddProduct = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!sku || !name || !price || (!imageFiles.length && !isEditMode)) {
-            alert('All fields and at least one image are required.');
+            toast.error('All fields and at least one image are required.');
             return;
         }
 
@@ -97,7 +104,7 @@ const AddProduct = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                alert('Product updated successfully!');
+                toast.success('Product updated successfully!');
                 localStorage.removeItem('pId');
                 navigate('/dashboard');
             } else {
@@ -108,11 +115,11 @@ const AddProduct = () => {
                     },
                 });
                 clearForm();
-                alert('Product added successfully!');
+                toast.success('Product added successfully!');
             }
         } catch (err: any) {
             console.error(err);
-            alert(err?.response?.data?.message || 'Something went wrong.');
+            toast.error(err?.response?.data?.message || 'Something went wrong.');
         } finally {
             setLoading(false);
         }
@@ -129,6 +136,8 @@ const AddProduct = () => {
 
     return (
         <>
+            {pageLoading && <IconLoader />}
+
             <Navbar />
             <div className="max-w-xl mx-auto p-4">
                 <h2 className="text-2xl font-semibold mb-4">{isEditMode ? 'Edit Product' : 'Add Product'}</h2>
@@ -212,12 +221,16 @@ const AddProduct = () => {
                     <div className="flex flex-wrap gap-4">
                         <button
                             type="submit"
-                            className={`flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-4 py-2 rounded ${loading ? 'opacity-70 cursor-not-allowed' : ''
+                            className={`flex-1 flex justify-center items-center gap-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white px-4 py-2 rounded transition font-semibold ${loading ? 'opacity-70 cursor-not-allowed' : ''
                                 }`}
                             disabled={loading}
                         >
-                            {loading ? 'Saving...' : isEditMode ? 'Update Product' : 'Add Product'}
+                            {loading && (
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            )}
+                            {!loading && (isEditMode ? 'Update Product' : 'Add Product')}
                         </button>
+
 
                         <button
                             type="button"
