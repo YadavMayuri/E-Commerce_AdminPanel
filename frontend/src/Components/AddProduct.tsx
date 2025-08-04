@@ -148,21 +148,21 @@ const AddProduct = () => {
                         placeholder="SKU"
                         value={sku}
                         onChange={(e) => setSku(e.target.value)}
-                        className="w-full border px-3 py-2 rounded"
+                        className="w-full border px-3 py-2 rounded focus:ring-0 focus:outline-none focus:border-blue-400"
                     />
                     <input
                         type="text"
                         placeholder="Product Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full border px-3 py-2 rounded capitalize"
+                        className="w-full border px-3 py-2 rounded capitalize focus:ring-0 focus:outline-none focus:border-purple-400"
                     />
                     <input
                         type="number"
                         placeholder="Price"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
-                        className="w-full border px-3 py-2 rounded"
+                        className="w-full border px-3 py-2 rounded focus:ring-0 focus:outline-none focus:border-pink-400"
                     />
 
                     <p className="mb-2">Images</p>
@@ -228,7 +228,10 @@ const AddProduct = () => {
                             {loading && (
                                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             )}
-                            {!loading && (isEditMode ? 'Update Product' : 'Add Product')}
+                            {!loading &&
+                                <span className="whitespace-nowrap">
+                                    {isEditMode ? 'Update Product' : 'Add Product'}
+                                </span>}
                         </button>
 
 

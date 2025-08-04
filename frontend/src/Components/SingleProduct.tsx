@@ -77,7 +77,7 @@ const SingleProduct = () => {
                             <button
                                 type="button"
                                 onClick={() => navigate('/dashboard')}
-                                className={`flex-1 bg-black text-white px-8 py-2 rounded `}
+                                className={`flex-1 bg-black text-white px-8 py-2 rounded mt-6`}
                             >
                                 Back
                             </button>
